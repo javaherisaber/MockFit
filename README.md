@@ -1,5 +1,6 @@
 # MockFit
 [![](https://jitpack.io/v/javaherisaber/MockFit.svg)](https://jitpack.io/#javaherisaber/MockFit)
+
 Kotlin library to mock http responses that fits into [retrofit](https://github.com/square/retrofit) from square
 
 ## Dependency
@@ -21,3 +22,7 @@ dependencies {
   annotationProcessor "com.github.javaherisaber.MockFit:compiler:$versions.mockFit" // for Java
 }
 ```
+
+## Todo
+
+- Add example usage and demo gif
