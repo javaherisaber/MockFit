@@ -13,5 +13,9 @@ ext {
             runner          : '1.1.0',
             espresso        : '3.3.0',
             retrofit        : '2.5.0',
+            autoService     : '1.0-rc7',
+            kotlinPoet      : '1.7.2',
+            multidex        : '2.0.1',
+            glide           : '4.11.0',
     ]
 }

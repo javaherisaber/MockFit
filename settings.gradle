@@ -1,3 +1,5 @@
-include ':lib'
+include ':runtime'
+include ':common'
+include ':compiler'
 include ':app'
 rootProject.name = "MockFit"
