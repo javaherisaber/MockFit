@@ -1,9 +1,11 @@
 plugins {
     id 'java-library'
     id 'kotlin'
-    id 'com.github.dcendents.android-maven'
 }
-group='com.github.javaherisaber'
+
+kotlin {
+    explicitApi()
+}
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -21,6 +23,7 @@ compileTestKotlin {
     }
 }
 
-dependencies {
 
+dependencies {
+    // no dependency
 }

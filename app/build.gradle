@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
+    id 'kotlin-android-extensions'
     id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -12,6 +14,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -31,7 +34,15 @@ android {
 
 dependencies {
     implementation "com.google.android.material:material:$versions.material"
+    implementation "androidx.multidex:multidex:$versions.multidex"
     implementation "androidx.constraintlayout:constraintlayout:$versions.constraintLayout"
+    implementation "com.squareup.retrofit2:retrofit:$versions.retrofit"
+    implementation "com.squareup.retrofit2:converter-gson:$versions.retrofit"
+    implementation "com.github.bumptech.glide:glide:$versions.glide"
+    
     testImplementation "junit:junit:$versions.junit"
     androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso"
+
+    kapt project(':compiler')
+    implementation project(':runtime')
 }
