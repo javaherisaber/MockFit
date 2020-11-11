@@ -1,7 +1,9 @@
 plugins {
     id 'java-library'
+    id 'com.github.dcendents.android-maven'
     id 'kotlin'
 }
+group='com.github.javaherisaber'
 
 kotlin {
     explicitApi()
