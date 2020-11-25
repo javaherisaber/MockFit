@@ -26,3 +26,5 @@ dependencies {
 ## Todo
 
 - Add example usage and demo gif
+- Use builder design pattern to simplify constructor
+- Split codes to more classes
