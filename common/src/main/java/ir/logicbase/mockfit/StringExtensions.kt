@@ -21,4 +21,4 @@ public fun String.replaceUrlDynamicPath(): String = this.replace("\\b\\d+((,\\d)
  *
  * result will be `users/{#}/form
  */
-public fun String.replaceEndpointDynamicPath(): String = this.replace("\\{(.*?)}".toRegex(), "{#}")
+public fun String.replaceEndpointDynamicPath(): String = this.replace("\\{(.*?)\\}".toRegex(), "{#}")
