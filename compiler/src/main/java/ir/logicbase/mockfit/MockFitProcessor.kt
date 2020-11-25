@@ -65,6 +65,9 @@ internal class MockFitProcessor : AbstractProcessor() {
             requestToJsonPath["[DELETE] ${it.value}"] = jsonPath
             requestMethodCount++
         }
+        element.getAnnotation(HTTP::class.java)?.let {
+            requestToJsonPath["[${it.method}] ${it.path}"] = jsonPath
+        }
         if (requestMethodCount > 1) {
             val packageName = processingEnv.elementUtils.getPackageOf(element).toString()
             val className = element.enclosingElement.simpleName
