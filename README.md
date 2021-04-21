@@ -25,7 +25,7 @@ dependencies {
 
 ## How to use
 
-### 1. Create json file of your api response lets say `picsum_list.json` and put it in `assets/mock_json` directory
+1. Create json file of your api response lets say `picsum_list.json` and put it in `assets/mock_json` directory
 
 ```json
 [
@@ -56,7 +56,7 @@ dependencies {
 ]
 ```
 
-### 2. Define your api interface and annotate endpoint with `@mock("picsum_list.json")` so that Mockfit can generate config for you
+2. Define your api interface and annotate endpoint with `@mock("picsum_list.json")` so that Mockfit can generate config for you
 ```kotlin
 interface Api {
 
@@ -69,7 +69,7 @@ interface Api {
 }
 ```
 
-### 3. Add `MockfitInterceptor` to retrofit configuration
+3. Add `MockfitInterceptor` to retrofit configuration
 ```kotlin
 class RemoteDataSource(private val context: Context) {
 
