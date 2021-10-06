@@ -117,3 +117,5 @@ class RemoteDataSource(private val context: Context) {
     }
 }
 ```
+
+4. Rebuild (or just build current module)
