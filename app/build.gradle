@@ -45,5 +45,4 @@ dependencies {
 
     kapt project(':compiler')
     implementation project(':runtime')
-    implementation project(path: ':compiler')
 }
