@@ -86,7 +86,7 @@ public class MockFitInterceptor constructor(
 
                 it.method == apiMockPathRule.method &&
                 it.route == apiMockPathRule.route &&
-                it.includeQueries.isNotEmpty() && it.includeQueries.all { query ->
+                it.includeQueries.all { query ->
                     eligibleQueries.contains(query)
                     if (removeValueForIncludedQueries)
                         eligibleQueries.contains(query.replaceUrlDynamicPath())
