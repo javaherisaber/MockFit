@@ -23,7 +23,7 @@ import javax.lang.model.element.TypeElement
 @AutoService(Processor::class)
 internal class MockFitProcessor : AbstractProcessor() {
 
-    private val requestToJsonPath = hashMapOf<String, String>()
+    private val requestToJsonPath = mutableListOf<MockPathRule>()
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> = mutableSetOf(
         Mock::class.java.name,
@@ -40,34 +40,39 @@ internal class MockFitProcessor : AbstractProcessor() {
     }
 
     private fun processMock(element: Element) {
-        val jsonPath = (element.getAnnotation(Mock::class.java)).response
         var requestMethodCount = 0
+        val mockAnnotation = (element.getAnnotation(Mock::class.java))
+        val includeQuery = mockAnnotation.includeQueries
+        val excludeQuery = mockAnnotation.excludeQueries
+        val jsonPath = mockAnnotation.response
+
         element.getAnnotation(GET::class.java)?.let {
-            requestToJsonPath["[GET] ${it.value}"] = jsonPath
+            requestToJsonPath += MockPathRule("GET", it.value, jsonPath, includeQuery, excludeQuery)
             requestMethodCount++
         }
         element.getAnnotation(POST::class.java)?.let {
-            requestToJsonPath["[POST] ${it.value}"] = jsonPath
+            requestToJsonPath += MockPathRule("POST", it.value, jsonPath,  includeQuery, excludeQuery)
             requestMethodCount++
         }
         element.getAnnotation(PATCH::class.java)?.let {
-            requestToJsonPath["[PATCH] ${it.value}"] = jsonPath
+            requestToJsonPath += MockPathRule("PATCH", it.value, jsonPath,  includeQuery, excludeQuery)
             requestMethodCount++
         }
         element.getAnnotation(PUT::class.java)?.let {
-            requestToJsonPath["[PUT] ${it.value}"] = jsonPath
+            requestToJsonPath += MockPathRule("PUT", it.value, jsonPath,  includeQuery, excludeQuery)
             requestMethodCount++
         }
         element.getAnnotation(HEAD::class.java)?.let {
-            requestToJsonPath["[HEAD] ${it.value}"] = jsonPath
+            requestToJsonPath += MockPathRule("HEAD", it.value, jsonPath,  includeQuery, excludeQuery)
         }
         element.getAnnotation(DELETE::class.java)?.let {
-            requestToJsonPath["[DELETE] ${it.value}"] = jsonPath
+            requestToJsonPath += MockPathRule("DELETE", it.value, jsonPath, includeQuery, excludeQuery)
             requestMethodCount++
         }
         element.getAnnotation(HTTP::class.java)?.let {
-            requestToJsonPath["[${it.method}] ${it.path}"] = jsonPath
+            requestToJsonPath += MockPathRule(it.method, it.path, jsonPath, includeQuery, excludeQuery)
         }
+
         if (requestMethodCount > 1) {
             val packageName = processingEnv.elementUtils.getPackageOf(element).toString()
             val className = element.enclosingElement.simpleName
@@ -85,13 +90,13 @@ internal class MockFitProcessor : AbstractProcessor() {
         classBuilder.addProperty(
             PropertySpec.builder(
                 "REQUEST_TO_JSON",
-                Map::class.asClassName().parameterizedBy(
-                    String::class.asClassName(), String::class.asClassName()
+                Array::class.asClassName().parameterizedBy(
+                    MockPathRule::class.asTypeName()
                 )
             ).initializer(
                 """
-                |mapOf(
-                |${generateRequestToJsonPathSource()}
+                |arrayOf(
+                | ${generateRequestToJsonPathSource()}
                 |)
                 """.trimMargin()
             ).addAnnotation(JvmField::class.java)
@@ -103,14 +108,15 @@ internal class MockFitProcessor : AbstractProcessor() {
     }
 
     private fun generateRequestToJsonPathSource(): String {
-        var result = ""
-        for ((request, jsonPath) in requestToJsonPath) {
+        val className = MockPathRule::class.java.name
+        return requestToJsonPath.joinToString(",") { rule ->
             // replace path identifier with # so that interceptor can operate it
-            val requestPath = request.replaceEndpointDynamicPath()
-            result += """"$requestPath" to "$jsonPath","""
-            result += '\n'
+            val requestPath = rule.route.replaceEndpointDynamicPath()
+            val includeQueries = """arrayOf(${rule.includeQueries.joinToString(",") { """"$it""""}})"""
+            val excludeQueries = """arrayOf(${rule.excludeQueries.joinToString(","){ """"$it""""}})"""
+
+            """${className}("${rule.method}", "$requestPath", "${rule.responseFile}", $includeQueries, $excludeQueries)"""
         }
-        return result.dropLast(2) // drop last comma and newline
     }
 
     companion object {
