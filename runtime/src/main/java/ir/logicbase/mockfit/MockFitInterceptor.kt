@@ -11,7 +11,7 @@ import java.io.IOException
  * @property bodyFactory interface to access InputStream for file operations
  * @property logger interface to log messages
  * @property baseUrl url of your remote data source
- * @property requestPathToJsonMap generated map in MockFitConfig file
+ * @property requestPathToMockPathRule generated map in MockFitConfig file
  * @property mockFilesPath path to access mock files
  * @property mockFitEnable master setting to enable or disable this interceptor
  * @property apiEnableMock if enabled it will proceed triggering mock response
@@ -24,7 +24,7 @@ public class MockFitInterceptor constructor(
     private val bodyFactory: BodyFactory,
     private val logger: Logger,
     private val baseUrl: String,
-    private val requestPathToJsonMap: Map<String, String>,
+    private val requestPathToMockPathRule: Array<MockPathRule>,
     private val mockFilesPath: String = "",
     private val mockFitEnable: Boolean = true,
     private val apiEnableMock: Boolean = true,
@@ -45,15 +45,19 @@ public class MockFitInterceptor constructor(
             .removeQueryParams()
             .replaceUrlDynamicPath() // replace dynamic path (eg. 3,5,7) with {#}
 
+        // for separate same route with different query and response
+        val queries = request.url().query()?.split("&") ?: listOf()
+
         // example requestPath -> [DELETE] shops/{#}/social-accounts/{#}
         val requestMethod = request.method().toUpperCase()
-        val requestPath = "[${request.method().toUpperCase()}] $route"
+        val apiMockPathRule = MockPathRule(request.method().toUpperCase(), route, "", arrayOf(), arrayOf())
 
         var canProceedWithMock = apiEnableMock // can we use mock or proceed with network api
 
         // check if requestPath is included
         for (item in apiIncludeIntoMock) {
-            if (item.replaceEndpointDynamicPath() == requestPath) {
+            val mockPath = item.replaceEndpointDynamicPath()
+            if (mockPath == apiMockPathRule.route) {
                 canProceedWithMock = true
                 break
             }
@@ -61,14 +65,38 @@ public class MockFitInterceptor constructor(
 
         // check if requestPath is excluded
         for (item in apiExcludeFromMock) {
-            if (item.replaceEndpointDynamicPath() == requestPath) {
+            if (item.replaceEndpointDynamicPath() == apiMockPathRule.route) {
                 canProceedWithMock = false
                 break
             }
         }
 
         if (canProceedWithMock) {
-            val json = getMockJsonOrNull(requestPath)
+            // same path but query is different
+            val currentApiPathRule = requestPathToMockPathRule.lastOrNull {
+                // remove values and just check query key presence to accept mock json
+                val removeValueForExcludedQueries = it.excludeQueries.any { q -> q.contains("{#}")}
+                val removeValueForIncludedQueries = it.includeQueries.any { q -> q.contains("{#}")}
+
+                val eligibleQueries = queries.filter { query ->
+                    if (removeValueForExcludedQueries)
+                        !it.excludeQueries.contains(query.replaceUrlDynamicPath())
+                    else
+                        !it.excludeQueries.contains(query)
+                }
+
+                it.method == apiMockPathRule.method &&
+                it.route == apiMockPathRule.route &&
+                it.includeQueries.all { query ->
+                    eligibleQueries.contains(query)
+                    if (removeValueForIncludedQueries)
+                        eligibleQueries.contains(query.replaceUrlDynamicPath())
+                    else
+                        eligibleQueries.contains(query)
+                }
+            }
+
+            val json = getMockJsonOrNull(currentApiPathRule)
             return json?.let {
                 // json is found
                 logger.log(TAG, "--> Mocking [$requestMethod] $url")
@@ -94,12 +122,15 @@ public class MockFitInterceptor constructor(
     /**
      * read mock json or if exception occur's return null
      *
-     * @param request api request
+     * @param rule of api path
      * @return json in string object
      */
     @Throws(IOException::class)
-    private fun getMockJsonOrNull(request: String): String? {
-        val fileName = requestPathToJsonMap[request] ?: return null
+    private fun getMockJsonOrNull(rule: MockPathRule?): String? {
+        if (rule == null) return null
+
+        val eligible = requestPathToMockPathRule.firstOrNull() { it == rule }
+        val fileName = eligible?.responseFile ?: return null
         val path = if (mockFilesPath.isEmpty()) fileName else "$mockFilesPath/$fileName"
         return bodyFactory.create(path)
             .bufferedReader()

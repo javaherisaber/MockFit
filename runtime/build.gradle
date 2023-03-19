@@ -29,4 +29,5 @@ compileTestKotlin {
 dependencies {
     implementation "com.squareup.retrofit2:retrofit:$versions.retrofit"
     api project(':common')
+    implementation project(path: ':compiler')
 }
