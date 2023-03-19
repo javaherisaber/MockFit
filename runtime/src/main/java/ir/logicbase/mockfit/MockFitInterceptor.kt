@@ -74,8 +74,9 @@ public class MockFitInterceptor constructor(
         if (canProceedWithMock) {
             // same path but query is different
             val currentApiPathRule = requestPathToMockPathRule.lastOrNull {
-                val removeValueForExcludedQueries = it.excludeQueries.any { it.contains("{#}")}
-                val removeValueForIncludedQueries = it.includeQueries.any { it.contains("{#}")}
+                // remove values and just check query key presence to accept mock json
+                val removeValueForExcludedQueries = it.excludeQueries.any { q -> q.contains("{#}")}
+                val removeValueForIncludedQueries = it.includeQueries.any { q -> q.contains("{#}")}
 
                 val eligibleQueries = queries.filter { query ->
                     if (removeValueForExcludedQueries)

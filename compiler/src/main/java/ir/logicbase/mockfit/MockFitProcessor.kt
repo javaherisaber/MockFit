@@ -41,7 +41,7 @@ internal class MockFitProcessor : AbstractProcessor() {
 
     private fun processMock(element: Element) {
         var requestMethodCount = 0
-        val mockAnnotation = (element.getAnnotation(Mock::class.java))
+        val mockAnnotation = element.getAnnotation(Mock::class.java)
         val includeQuery = mockAnnotation.includeQueries
         val excludeQuery = mockAnnotation.excludeQueries
         val jsonPath = mockAnnotation.response

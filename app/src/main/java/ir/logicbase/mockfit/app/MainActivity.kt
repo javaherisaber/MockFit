@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
             currentImageIndex = 0
         }
         executors.networkIO().execute {
-            dataSource.api().getListOfPicsums(2, 20).enqueue(object : Callback<List<Picsum>> {
+            dataSource.api().getFavoritePicsums("favorites", 2, 20).enqueue(object : Callback<List<Picsum>> {
                 override fun onResponse(call: Call<List<Picsum>>, response: Response<List<Picsum>>) {
                     loadingApi = false
                     executors.mainThread().execute {

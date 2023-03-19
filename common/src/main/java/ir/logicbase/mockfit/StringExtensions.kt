@@ -10,7 +10,7 @@ package ir.logicbase.mockfit
 public fun String.removeQueryParams(): String = this.replace("\\?.*".toRegex(), "")
 
 /**
- * Replace resource path from given url, for example in this url : `users/2/form` or `user/cb7d8a83-0b25-4cca-911b-49a1974f1193/from`
+ * Replace resource path from given url, for example in this url : `users/2/form` or `user/cb7d8a83-0b25-4cca-911b-49a1974f1193/form`
  *
  * result will be `users/{#}/form`
  */
