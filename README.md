@@ -1,7 +1,7 @@
 # MockFit
 [![](https://jitpack.io/v/javaherisaber/MockFit.svg)](https://jitpack.io/#javaherisaber/MockFit)
 
-Kotlin library to mock http responses that fits into [retrofit](https://github.com/square/retrofit) from square
+Kotlin library to intercept http responses that fits into [retrofit](https://github.com/square/retrofit)
 
 <img src="https://user-images.githubusercontent.com/29440700/115327793-ce226080-a1a4-11eb-814b-5f58afbb5af6.png" width="256" height="455">
 
