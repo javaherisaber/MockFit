@@ -1,5 +1,6 @@
 # MockFit
 [![](https://jitpack.io/v/javaherisaber/MockFit.svg)](https://jitpack.io/#javaherisaber/MockFit)
+[![Download](https://img.shields.io/badge/Android%20Arsenal-MockFit-green.svg)](https://android-arsenal.com/details/1/8462)
 
 Kotlin library to intercept http responses that fits into [retrofit](https://github.com/square/retrofit)
 
