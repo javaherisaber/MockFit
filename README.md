@@ -2,7 +2,7 @@
 [![](https://jitpack.io/v/javaherisaber/MockFit.svg)](https://jitpack.io/#javaherisaber/MockFit)
 [![Download](https://img.shields.io/badge/Android%20Arsenal-MockFit-green.svg)](https://android-arsenal.com/details/1/8462)
 
-Kotlin library to intercept http responses that fits into [retrofit](https://github.com/square/retrofit)
+Kotlin library to intercept [Retrofit](https://github.com/square/retrofit) requests and provide a static JSON instead of remote response
 
 <img src="https://user-images.githubusercontent.com/29440700/115327793-ce226080-a1a4-11eb-814b-5f58afbb5af6.png" width="256" height="455">
 
